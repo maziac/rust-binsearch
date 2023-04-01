@@ -4,8 +4,25 @@ use std::{env};
 
 
 fn main() {
-      let args: Vec<String> = env::args().collect();
-      for arg in &args[1..] {
+    let mut offs = 0;
+    let mut size = 0;
+
+    let args: Vec<String> = env::args().collect();
+    let mut args_iter = args.iter();
+
+    // Skip path
+    args_iter.next();
+
+    // Parse command line arguments
+    loop {
+        // Get next argument
+        let arg_option = args_iter.next();
+        if arg_option == None {
+            break
+        }
+        let arg = arg_option.unwrap();
+
+        // Check argument
         if arg == "--help" {
              args_help();
         }
@@ -16,6 +33,12 @@ fn main() {
             args_reloffs();
         }
         else if arg == "--size" {
+            let s = get_next(args_iter, "Expected a size.");
+            println!("size: {}", s);
+
+            size = s.parse::<i32>().unwrap();
+            //dump(offs, size);
+            offs += size;
             args_size();
         }
         else if arg == "--search" {
@@ -25,10 +48,24 @@ fn main() {
             args_format();
         }
         else {
-            println!("Unknown argument: {}", arg);
-            std::process::exit(1);
+            abort(&["Unknown argument: ", arg].concat());
         }
     }
+}
+
+
+fn abort(error_msg: &str) {
+    println!("Aborting: {}", error_msg);
+    std::process::exit(1);
+}
+
+
+fn get_next(iter: impl Iterator<Item=&'a String>, error_msg: &str) { // -> &str {
+    let item = iter.next();
+    if item == None {
+        abort(error_msg);
+    }
+ //   item.unwrap()
 }
 
 
