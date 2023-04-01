@@ -51,8 +51,8 @@ use std::fs::File;
 fn main() {
     let mut buffer: Vec<u8> = Vec::new();
     let mut file_name: String;
-    let mut offs = 0;
-    let mut size: i32;
+    let mut offs: usize = 0;
+    let mut size: usize = std::usize::MAX;
 
     let args: Vec<String> = env::args().collect();
     let mut args_iter = args.iter();
@@ -74,32 +74,38 @@ fn main() {
              args_help();
         }
         else if arg == "--offs" {
-            let o = get_arg(args_iter.next(), "Expected a size.");
+            let o = get_arg(args_iter.next(), "Expected an offset.");
             println!("offs: {}", o);
-            offs = o.parse::<i32>().unwrap();
+            offs = o.parse::<usize>().unwrap();
         }
         else if arg == "--roffs" {
-            args_reloffs();
+            let ro = get_arg(args_iter.next(), "Expected a relative offset.");
+            println!("roffs: {}", ro);
+            offs += ro.parse::<usize>().unwrap();
         }
         else if arg == "--size" {
             let s = get_arg(args_iter.next(), "Expected a size.");
             println!("size: {}", s);
-            size = s.parse::<i32>().unwrap();
+            // Check for max
+            if s == "all" {
+                size = std::usize::MAX;
+            }
+            else {
+                size = s.parse::<usize>().unwrap();
+            }
             dump(&buffer, offs, size);
             offs += size;
         }
         else if arg == "--search" {
-            args_search();
+            //args_search();
         }
         else if arg == "--format" {
-            args_format();
+            //args_format();
         }
         else {
             // It is the filename. Open file.
+            buffer.clear();
             append_file(&mut buffer, arg);
-
-
-            //abort(&["Unknown argument: ", arg].concat());
         }
     }
 }
@@ -131,9 +137,16 @@ fn append_file(buffer: &mut Vec<u8>, spath: &str) {
 /// # Arguments
 /// * 'buffer' - The buffer to dump.
 /// * 'offset' - The first byte to dump out.
-/// * 'size' - The umber of bytes to dump out.
-fn dump(buffer: & Vec<u8>, offset: i32, size: i32) {
-    io::stdout().write_all(buffer).unwrap();
+/// * 'size' - The number of bytes to dump out.
+fn dump(buffer: & Vec<u8>, offset: usize, size: usize) {
+    let len = buffer.len();
+    if offset < len {
+        let mut end = offset + size;
+        if end > len {
+            end = len;
+        }
+        io::stdout().write_all(&buffer[offset..end]).unwrap();
+    }
 }
 
 
@@ -179,18 +192,5 @@ fn args_help() {
     println!("- \"binsearch --offs 10 --size 100\": Outputs the bytes from position 10 to 109.");
     println!("- \"binsearch --offs 10 --size 100 --offs 200 --size 10\": Outputs the bytes from position 10 to 109, directly followed by 200 to 209.");
     println!("- \"binsearch --offs 10 --size 100 --reloffs 10 --size 20\": Outputs the bytes from position 10 to 109, directly followed by 120 to 129.");
-    println!("- \"binsearch --search 'abc' --size 10\": Outputs 10 bytes from the first occurence of 'abc'. If not fould nothing is output.");
-}
-
-
-fn args_offs() {
-}
-
-fn args_reloffs() {
-}
-
-fn args_search() {
-}
-
-fn args_format() {
+    println!("- \"binsearch --search 'abc' --size 10\": Outputs 10 bytes from the first occurrence of 'abc'. If not fould nothing is output.");
 }
