@@ -1,3 +1,43 @@
+#![warn(missing_docs)]
+//! A binary search and dump utility.
+//!
+//! With this command line tool you can search byte sequences or strings
+//! in a binary file.
+//! The found sequences can be piped into another process.
+//! It is also possible to simply dump binary data from a certain offset or
+//! concatenate several binary files.
+//! And you can mix all these functionality.
+//!
+//! # Examples:
+//!
+//! ~~~
+//! binsearch file.bin --search "abc" --size 5
+//! Outputs: abcde
+//! For file.bin: xyzabcdeqrst
+//! ~~~
+//!
+//! ~~~
+//! binsearch file.bin --offs 2 --size 4
+//! Outputs: zabc
+//! For file.bin: xyzabcdeqrst
+//! ~~~
+//!
+//! ~~~
+//! binsearch file1.bin file2.bin
+//! Outputs: abcuvwxyz
+//! For file1.bin: abc
+//! and file2.bin: uvwxyz
+//! ~~~
+//!
+//! ~~~
+//! binsearch file1.bin --offs 1 --size 1 file2.bin --size 3
+//! Outputs: buvw
+//! For file1.bin: abc
+//! and file2.bin: uvwxyz
+//! ~~~
+
+
+
 use std::{env};
 use std::io::{self, Write};
 use std::io::Read;
@@ -6,6 +46,8 @@ use std::fs::File;
 
 
 
+/// Parses the command line arguments.
+/// Reads in file(s) searches and dumps out data.
 fn main() {
     let mut buffer: Vec<u8> = Vec::new();
     let mut file_name: String;
@@ -32,7 +74,7 @@ fn main() {
              args_help();
         }
         else if arg == "--offs" {
-            let o = get_next(args_iter.next(), "Expected a size.");
+            let o = get_arg(args_iter.next(), "Expected a size.");
             println!("offs: {}", o);
             offs = o.parse::<i32>().unwrap();
         }
@@ -40,7 +82,7 @@ fn main() {
             args_reloffs();
         }
         else if arg == "--size" {
-            let s = get_next(args_iter.next(), "Expected a size.");
+            let s = get_arg(args_iter.next(), "Expected a size.");
             println!("size: {}", s);
             size = s.parse::<i32>().unwrap();
             dump(&buffer, offs, size);
@@ -63,14 +105,11 @@ fn main() {
 }
 
 
-
+/// Reads a binary file and puts the contents into 'buffer'.
+/// # Arguments
+/// * 'buffer' - The file contents is appended to the buffer.
+/// * 'spath' - The path to the file.
 fn append_file(buffer: &mut Vec<u8>, spath: &str) {
-    // let path = Path::new(spath);
-    // let file = match File::open(&path) {
-    // Err(why)=>panic("couldn't open {}: {}", path.display(), why),
-    //     Ok(file) => file,
-    // };
-
     // Open file
     let file = match File::open(&spath) {
         Err(why) => panic!("Couldn't open {}: {}", spath, why),
@@ -88,19 +127,34 @@ fn append_file(buffer: &mut Vec<u8>, spath: &str) {
 }
 
 
-fn dump(buffer: & Vec<u8>, offset:i32, size:i32) {
+/// Dumps out the contents of 'buffer' to stdout.
+/// # Arguments
+/// * 'buffer' - The buffer to dump.
+/// * 'offset' - The first byte to dump out.
+/// * 'size' - The umber of bytes to dump out.
+fn dump(buffer: & Vec<u8>, offset: i32, size: i32) {
     io::stdout().write_all(buffer).unwrap();
 }
 
 
-
+/// Aborts. Stops the program and prints out an error message.
+/// # Arguments
+/// * 'error_msg' - The text to show.
 fn abort(error_msg: &str) {
     println!("Aborting: {}", error_msg);
     std::process::exit(1);
 }
 
 
-fn get_next<'a>(arg_option: Option<&'a String>, error_msg: &str) -> &'a String {
+/// Checks if argument exists.
+/// If not the program aborts.
+/// If it exists the argument is unwrapped into a string and returned.
+/// # Arguments
+/// * 'arg_option' - An argument option.
+/// * 'error_msg' - The error message to show if argument does not exist.
+/// # Returns
+/// The argument as a string.
+fn get_arg<'a>(arg_option: Option<&'a String>, error_msg: &str) -> &'a String {
     if arg_option == None {
         abort(error_msg);
     }
@@ -108,7 +162,7 @@ fn get_next<'a>(arg_option: Option<&'a String>, error_msg: &str) -> &'a String {
 }
 
 
-
+/// Prints the help.
 fn args_help() {
     println!("Usage:");
 
