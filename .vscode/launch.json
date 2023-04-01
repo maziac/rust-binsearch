@@ -20,7 +20,10 @@
 				}
 			},
 			"args": [
-				"--help"
+				"abc.bin",
+				"abc.bin",
+				"--offs", "0",
+				"--size", "12"
 			],
 			"cwd": "${workspaceFolder}"
 		},
