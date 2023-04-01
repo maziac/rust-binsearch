@@ -1,16 +1,13 @@
 use std::{env};
 
 
+
+
 fn main() {
-    let args = env::args();
-    // Consume path to executable
-    args.next();
-
-    loop {
-        let arg = args.next();
-
-        if arg as &str == "--help" {
-            args_help();
+      let args: Vec<String> = env::args().collect();
+      for arg in &args[1..] {
+        if arg == "--help" {
+             args_help();
         }
         else if arg == "--offs" {
             args_offs();
@@ -27,10 +24,10 @@ fn main() {
         else if arg == "--format" {
             args_format();
         }
-        // else {
-        //     println!("Unknown argument: {}", arg);
-        //     std::process::exit(1);
-        // }
+        else {
+            println!("Unknown argument: {}", arg);
+            std::process::exit(1);
+        }
     }
 }
 

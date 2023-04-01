@@ -18,3 +18,12 @@ Examples:
 - "binsearch --offs 10 --size 100 --offs 200 --size 10": Outputs the bytes from position 10 to 109, directly followed by 200 to 209.
 - "binsearch --offs 10 --size 100 --reloffs 10 --size 20": Outputs the bytes from position 10 to 109, directly followed by 120 to 129.
 - "binsearch --search 'abc' --size 10": Outputs 10 bytes from the first occurence of 'abc'. If not found nothing is output.
+
+
+# Developemnt
+
+# Run
+
+~~~
+cargo run
+~~~
