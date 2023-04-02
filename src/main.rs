@@ -37,6 +37,7 @@
 //! ~~~
 
 use std::{env};
+use std::io::{Write};
 
 mod bin_dumper;
 mod arguments;
@@ -50,13 +51,17 @@ use crate::arguments::*;
 /// Reads in file(s) searches and dumps out data.
 fn main() {
     // Parse all arguments
-    loop_arguments(env::args().collect())
+    loop_arguments(env::args().collect(), &mut std::io::stdout())
 }
 
 
 /// Separated the looping over the arguments into another function
 /// to allow unit tests.
-fn loop_arguments(args_vec: Vec<String>) {
+/// Arguments:
+/// * 'args_vec' - A vector of strings with the arguments. First element is not used
+/// (contains the path to the executable).
+/// * 'output' - The destination to write to, e.g. a File or io::stdout() or a Vec.
+fn loop_arguments(args_vec: Vec<String>, output: &mut impl Write) {
     let mut offs: i32 = 0;
     let mut bin_dumper = BinDumper::new();
     let mut args = Arguments::new(args_vec);
@@ -88,7 +93,7 @@ fn loop_arguments(args_vec: Vec<String>) {
             else {
                 size = s.parse::<i32>().unwrap();
             }
-            bin_dumper.dump(offs, size, &mut std::io::stdout());
+            bin_dumper.dump(offs, size, output);
             offs += size;
         }
         else if arg == "--search" {
