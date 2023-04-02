@@ -7,7 +7,7 @@
 		{
 			"type": "lldb",
 			"request": "launch",
-			"name": "Debug executable 'binsearch'",
+			"name": "Debug",
 			"cargo": {
 				"args": [
 					"build",
@@ -30,7 +30,7 @@
 		{
 			"type": "lldb",
 			"request": "launch",
-			"name": "Debug unit tests in executable 'binsearch'",
+			"name": "Debug unit tests",
 			"cargo": {
 				"args": [
 					"test",

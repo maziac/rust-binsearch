@@ -48,7 +48,7 @@ use crate::arguments::*;
 /// Parses the command line arguments.
 /// Reads in file(s) searches and dumps out data.
 fn main() {
-    let mut offs: usize = 0;
+    let mut offs: i32 = 0;
     let mut arguments = Arguments::new();
     let mut bin_dumper = BinDumper::new();
 
@@ -68,23 +68,23 @@ fn main() {
         else if arg == "--offs" {
             let o = arguments.get_next_check("Expected an offset.");
             println!("offs: {}", o);
-            offs = o.parse::<usize>().unwrap();
+            offs = o.parse::<i32>().unwrap();
         }
         else if arg == "--roffs" {
             let ro = arguments.get_next_check("Expected a relative offset.");
             println!("roffs: {}", ro);
-            offs += ro.parse::<usize>().unwrap();
+            offs += ro.parse::<i32>().unwrap();
         }
         else if arg == "--size" {
             let s = arguments.get_next_check("Expected a size.");
             println!("size: {}", s);
             // Check for max
-            let size: usize;
+            let size: i32;
             if s == "all" {
-                size = std::usize::MAX;
+                size = std::i32::MAX;
             }
             else {
-                size = s.parse::<usize>().unwrap();
+                size = s.parse::<i32>().unwrap();
             }
             bin_dumper.dump(offs, size);
             offs += size;
