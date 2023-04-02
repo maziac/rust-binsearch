@@ -36,6 +36,7 @@
 //! and file2.bin: uvwxyz
 //! ~~~
 
+use std::{env};
 
 mod bin_dumper;
 mod arguments;
@@ -49,13 +50,13 @@ use crate::arguments::*;
 /// Reads in file(s) searches and dumps out data.
 fn main() {
     let mut offs: i32 = 0;
-    let mut arguments = Arguments::new();
+    let mut args = Arguments::new(env::args().collect());
     let mut bin_dumper = BinDumper::new();
 
     // Parse command line arguments
     loop {
         // Get next argument
-        let arg_option = arguments.get_next();
+        let arg_option = args.get_next();
         if arg_option == None {
             break
         }
@@ -66,17 +67,17 @@ fn main() {
              args_help();
         }
         else if arg == "--offs" {
-            let o = arguments.get_next_check("Expected an offset.");
+            let o = args.get_next_check("Expected an offset.");
             println!("offs: {}", o);
             offs = o.parse::<i32>().unwrap();
         }
         else if arg == "--roffs" {
-            let ro = arguments.get_next_check("Expected a relative offset.");
+            let ro = args.get_next_check("Expected a relative offset.");
             println!("roffs: {}", ro);
             offs += ro.parse::<i32>().unwrap();
         }
         else if arg == "--size" {
-            let s = arguments.get_next_check("Expected a size.");
+            let s = args.get_next_check("Expected a size.");
             println!("size: {}", s);
             // Check for max
             let size: i32;

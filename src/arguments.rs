@@ -2,7 +2,6 @@
 //! to access them.
 
 
-use std::{env};
 
 pub struct Arguments {
 	args: Vec<String>,
@@ -12,8 +11,7 @@ pub struct Arguments {
 impl Arguments {
 
 	/// Constructor.
-	pub fn new() -> Self {
-    	let args: Vec<String> = env::args().collect();
+	pub fn new(args: Vec<String>) -> Self {
 		Self {
 			args,
 			index: 0
@@ -50,4 +48,35 @@ impl Arguments {
 			arg.unwrap().to_string()
 		}
 	}
+}
+
+
+
+mod tests {
+    use crate::arguments::Arguments;
+
+    #[test]
+    fn get_next_empty() {
+		let mut args = Arguments::new(vec!["path".to_string()] );
+
+		// Next is empty
+		assert_eq!(args.get_next(), None);
+	}
+
+    #[test]
+    fn get_next_a_few() {
+		let mut args = Arguments::new(vec![
+			"path".to_string(),
+			"file".to_string(),
+			"--offs".to_string(),
+			"+100".to_string(),
+			] );
+
+		// Next is empty
+		assert_eq!(args.get_next().unwrap(), "file");
+		assert_eq!(args.get_next().unwrap(), "--offs");
+		assert_eq!(args.get_next().unwrap(), "+100");
+		assert_eq!(args.get_next(), None);
+	}
+
 }
