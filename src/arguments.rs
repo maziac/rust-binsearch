@@ -52,6 +52,7 @@ impl Arguments {
 
 
 
+#[cfg(test)]
 mod tests {
     use crate::arguments::Arguments;
 

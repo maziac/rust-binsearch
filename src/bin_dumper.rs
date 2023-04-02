@@ -86,8 +86,6 @@ impl BinDumper {
 
 
 #[cfg(test)]
-
-
 mod tests {
     use crate::bin_dumper::BinDumper;
 
