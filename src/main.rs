@@ -37,9 +37,6 @@
 //! ~~~
 
 
-
-use std::{env};
-
 mod bin_dumper;
 mod arguments;
 
@@ -51,11 +48,9 @@ use crate::arguments::*;
 /// Parses the command line arguments.
 /// Reads in file(s) searches and dumps out data.
 fn main() {
-    let mut buffer: Vec<u8> = Vec::new();
-    let mut file_name: String;
     let mut offs: usize = 0;
-    let mut size: usize = std::usize::MAX;
     let mut arguments = Arguments::new();
+    let mut bin_dumper = BinDumper::new();
 
     // Parse command line arguments
     loop {
@@ -84,13 +79,14 @@ fn main() {
             let s = arguments.get_next_check("Expected a size.");
             println!("size: {}", s);
             // Check for max
+            let size: usize;
             if s == "all" {
                 size = std::usize::MAX;
             }
             else {
                 size = s.parse::<usize>().unwrap();
             }
-            dump(&buffer, offs, size);
+            bin_dumper.dump(offs, size);
             offs += size;
         }
         else if arg == "--search" {
@@ -101,8 +97,7 @@ fn main() {
         }
         else {
             // It is the filename. Open file.
-            buffer.clear();
-            append_file(&mut buffer, arg);
+            bin_dumper.read_file(arg);
         }
     }
 }

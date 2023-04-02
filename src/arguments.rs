@@ -1,5 +1,8 @@
+//! Reads the command line arguments and provides functions
+//! to access them.
+
+
 use std::{env};
-//use std::slice::Iter;
 
 pub struct Arguments {
 	args: Vec<String>,
@@ -11,8 +14,6 @@ impl Arguments {
 	/// Constructor.
 	pub fn new() -> Self {
     	let args: Vec<String> = env::args().collect();
-    	// Skip path
-    	args.iter().next();
 		Self {
 			args,
 			index: 0
