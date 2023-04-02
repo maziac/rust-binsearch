@@ -47,19 +47,50 @@ impl BinDumper {
 	}
 
 
-	/// Dumps out the contents of 'buffer' to stdout.
+	/// Dumps out the contents of a slice of 'buffer' to stdout.
 	/// # Arguments
-	/// * 'buffer' - The buffer to dump.
 	/// * 'offset' - The first byte to dump out.
 	/// * 'size' - The number of bytes to dump out.
 	pub fn dump(& self, offset: usize, size: usize) {
+		let dump_buffer = self.dump_to_buffer(offset, size);
+		io::stdout().write_all(dump_buffer).unwrap();
+	}
+
+
+	/// Dumps out the contents of a slice of 'buffer' to a buffer.
+	/// # Arguments
+	/// * 'offset' - The first byte to dump out.
+	/// * 'size' - The number of bytes to dump out.
+	fn dump_to_buffer(& self, offset: usize, size: usize) -> &[u8] {
 		let len = self.buffer.len();
-		if offset < len {
-			let mut end = offset + size;
-			if end > len {
-				end = len;
-			}
-			io::stdout().write_all(&self.buffer[offset..end]).unwrap();
+		let mut start = offset;
+		if start >= len {
+			start = len-1;
 		}
+		let mut end = offset + size;
+		if end > len {
+			end = len;
+		}
+		&self.buffer[start..end]
+	}
+
+
+}
+
+
+
+
+#[cfg(test)]
+
+
+mod tests {
+    use crate::bin_dumper::BinDumper;
+
+    #[test]
+    fn dump_to_buffer() {
+		let mut bd = BinDumper::new();
+		bd.read_file("test_data/abcdefghijkl.bin");
+		let buf = bd.dump_to_buffer(0, std::usize::MAX);
+		assert_eq!(buf.len(), 12);
 	}
 }
