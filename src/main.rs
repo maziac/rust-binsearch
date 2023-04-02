@@ -54,14 +54,7 @@ fn main() {
     let mut bin_dumper = BinDumper::new();
 
     // Parse command line arguments
-    loop {
-        // Get next argument
-        let arg_option = args.get_next();
-        if arg_option == None {
-            break
-        }
-        let arg = arg_option.unwrap();
-
+    while let Some(arg) = args.get_next() {
         // Check argument
         if arg == "--help" {
              args_help();
