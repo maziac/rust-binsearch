@@ -41,7 +41,10 @@
 use std::{env};
 
 mod bin_dumper;
+mod arguments;
+
 use crate::bin_dumper::*;
+use crate::arguments::*;
 
 
 
@@ -52,17 +55,12 @@ fn main() {
     let mut file_name: String;
     let mut offs: usize = 0;
     let mut size: usize = std::usize::MAX;
-
-    let args: Vec<String> = env::args().collect();
-    let mut args_iter = args.iter();
-
-    // Skip path
-    args_iter.next();
+    let mut arguments = Arguments::new();
 
     // Parse command line arguments
     loop {
         // Get next argument
-        let arg_option = args_iter.next();
+        let arg_option = arguments.get_next();
         if arg_option == None {
             break
         }
@@ -73,17 +71,17 @@ fn main() {
              args_help();
         }
         else if arg == "--offs" {
-            let o = get_arg(args_iter.next(), "Expected an offset.");
+            let o = arguments.get_next_check("Expected an offset.");
             println!("offs: {}", o);
             offs = o.parse::<usize>().unwrap();
         }
         else if arg == "--roffs" {
-            let ro = get_arg(args_iter.next(), "Expected a relative offset.");
+            let ro = arguments.get_next_check("Expected a relative offset.");
             println!("roffs: {}", ro);
             offs += ro.parse::<usize>().unwrap();
         }
         else if arg == "--size" {
-            let s = get_arg(args_iter.next(), "Expected a size.");
+            let s = arguments.get_next_check("Expected a size.");
             println!("size: {}", s);
             // Check for max
             if s == "all" {
@@ -107,31 +105,6 @@ fn main() {
             append_file(&mut buffer, arg);
         }
     }
-}
-
-
-/// Aborts. Stops the program and prints out an error message.
-/// # Arguments
-/// * 'error_msg' - The text to show.
-fn abort(error_msg: &str) {
-    println!("Aborting: {}", error_msg);
-    std::process::exit(1);
-}
-
-
-/// Checks if argument exists.
-/// If not the program aborts.
-/// If it exists the argument is unwrapped into a string and returned.
-/// # Arguments
-/// * 'arg_option' - An argument option.
-/// * 'error_msg' - The error message to show if argument does not exist.
-/// # Returns
-/// The argument as a string.
-fn get_arg<'a>(arg_option: Option<&'a String>, error_msg: &str) -> &'a String {
-    if arg_option == None {
-        abort(error_msg);
-    }
-    arg_option.unwrap()
 }
 
 
