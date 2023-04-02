@@ -2,7 +2,7 @@
 //! Searches the buffer and dumps out data to stdio from a
 //! specific offset and for a specific width.
 
-use std::io::{self, Write};
+use std::io::{Write};
 use std::io::Read;
 use std::io::BufReader;
 use std::fs::File;
@@ -51,17 +51,8 @@ impl BinDumper {
 	/// # Arguments
 	/// * 'offset' - The first byte to dump out.
 	/// * 'size' - The number of bytes to dump out.
-	pub fn dump(& self, offset: i32, size: i32) {
-		let dump_buffer = self.dump_to_buffer(offset, size);
-		io::stdout().write_all(dump_buffer).unwrap();
-	}
-
-
-	/// Dumps out the contents of a slice of 'buffer' to a buffer.
-	/// # Arguments
-	/// * 'offset' - The first byte to dump out.
-	/// * 'size' - The number of bytes to dump out.
-	fn dump_to_buffer(& self, offset: i32, size: i32) -> &[u8] {
+	/// * 'output' - The destination to write to, e.g. a File or io::stdout() or a Vec.
+	pub fn dump(& self, offset: i32, size: i32, output: &mut impl Write) {
 		let len: i32 = self.buffer.len() as i32;
 		let mut start = offset;
 		let mut count = size;
@@ -76,7 +67,7 @@ impl BinDumper {
 			count = len - start;
 		}
 		let  end = start + count;
-		&self.buffer[start as usize..end as usize]
+		output.write_all(&self.buffer[start as usize..end as usize]).unwrap();
 	}
 
 
@@ -120,35 +111,40 @@ mod tests {
 
 		// All
 		{
-			let buf = bd.dump_to_buffer(0, std::i32::MAX);
+        	let mut buf: Vec<u8> = Vec::new();
+			bd.dump(0, std::i32::MAX, &mut buf);
 			assert_eq!(buf.len(), 12);
 			assert_eq!(buf, "abcdefghijkl".as_bytes());
 		}
 
 		// All
 		{
-			let buf = bd.dump_to_buffer(0, 12);
+        	let mut buf: Vec<u8> = Vec::new();
+			bd.dump(0, 12, &mut buf);
 			assert_eq!(buf.len(), 12);
 			assert_eq!(buf, "abcdefghijkl".as_bytes());
 		}
 
 		// Right
 		{
-			let buf = bd.dump_to_buffer(8, std::i32::MAX);
+        	let mut buf: Vec<u8> = Vec::new();
+			bd.dump(8, std::i32::MAX, &mut buf);
 			assert_eq!(buf.len(), 4);
 			assert_eq!(buf, "ijkl".as_bytes());
 		}
 
 		// Left
 		{
-			let buf = bd.dump_to_buffer(-4, 12);
+        	let mut buf: Vec<u8> = Vec::new();
+			bd.dump(-4, 12, &mut buf);
 			assert_eq!(buf.len(), 8);
 			assert_eq!(buf, "abcdefgh".as_bytes());
 		}
 
 		// Partial
 		{
-			let buf = bd.dump_to_buffer(1, 10);
+        	let mut buf: Vec<u8> = Vec::new();
+			bd.dump(1, 10, &mut buf);
 			assert_eq!(buf.len(), 10);
 			assert_eq!(buf, "bcdefghijk".as_bytes());
 		}

@@ -49,9 +49,17 @@ use crate::arguments::*;
 /// Parses the command line arguments.
 /// Reads in file(s) searches and dumps out data.
 fn main() {
+    // Parse all arguments
+    loop_arguments(env::args().collect())
+}
+
+
+/// Separated the looping over the arguments into another function
+/// to allow unit tests.
+fn loop_arguments(args_vec: Vec<String>) {
     let mut offs: i32 = 0;
-    let mut args = Arguments::new(env::args().collect());
     let mut bin_dumper = BinDumper::new();
+    let mut args = Arguments::new(args_vec);
 
     // Parse command line arguments
     while let Some(arg) = args.get_next() {
@@ -80,7 +88,7 @@ fn main() {
             else {
                 size = s.parse::<i32>().unwrap();
             }
-            bin_dumper.dump(offs, size);
+            bin_dumper.dump(offs, size, &mut std::io::stdout());
             offs += size;
         }
         else if arg == "--search" {
@@ -115,4 +123,15 @@ fn args_help() {
     println!("- \"binsearch --offs 10 --size 100 --offs 200 --size 10\": Outputs the bytes from position 10 to 109, directly followed by 200 to 209.");
     println!("- \"binsearch --offs 10 --size 100 --reloffs 10 --size 20\": Outputs the bytes from position 10 to 109, directly followed by 120 to 129.");
     println!("- \"binsearch --search 'abc' --size 10\": Outputs 10 bytes from the first occurrence of 'abc'. If not fould nothing is output.");
+}
+
+
+#[cfg(test)]
+mod tests {
+
+    #[test]
+    fn loop_arguments_empty() {
+		//
+		//assert_eq!(args.get_next(), None);
+	}
 }
