@@ -37,13 +37,12 @@
 //! ~~~
 
 use std::{env};
-use std::io::{Write};
 
-mod bin_dumper;
-mod arguments;
 
-use crate::bin_dumper::*;
-use crate::arguments::*;
+mod loop_arguments;
+
+
+use crate::loop_arguments::*;
 
 
 
@@ -52,91 +51,4 @@ use crate::arguments::*;
 fn main() {
     // Parse all arguments
     loop_arguments(env::args().collect(), &mut std::io::stdout())
-}
-
-
-/// Separated the looping over the arguments into another function
-/// to allow unit tests.
-/// Arguments:
-/// * 'args_vec' - A vector of strings with the arguments. First element is not used
-/// (contains the path to the executable).
-/// * 'output' - The destination to write to, e.g. a File or io::stdout() or a Vec.
-fn loop_arguments(args_vec: Vec<String>, output: &mut impl Write) {
-    let mut offs: i32 = 0;
-    let mut bin_dumper = BinDumper::new();
-    let mut args = Arguments::new(args_vec);
-
-    // Parse command line arguments
-    while let Some(arg) = args.get_next() {
-        // Check argument
-        if arg == "--help" {
-             args_help();
-        }
-        else if arg == "--offs" {
-            let o = args.get_next_check("Expected an offset.");
-            println!("offs: {}", o);
-            offs = o.parse::<i32>().unwrap();
-        }
-        else if arg == "--roffs" {
-            let ro = args.get_next_check("Expected a relative offset.");
-            println!("roffs: {}", ro);
-            offs += ro.parse::<i32>().unwrap();
-        }
-        else if arg == "--size" {
-            let s = args.get_next_check("Expected a size.");
-            println!("size: {}", s);
-            // Check for max
-            let size: i32;
-            if s == "all" {
-                size = std::i32::MAX;
-            }
-            else {
-                size = s.parse::<i32>().unwrap();
-            }
-            bin_dumper.dump(offs, size, output);
-            offs += size;
-        }
-        else if arg == "--search" {
-            //args_search();
-        }
-        else if arg == "--format" {
-            //args_format();
-        }
-        else {
-            // It is the filename. Open file.
-            bin_dumper.read_file(arg);
-        }
-    }
-}
-
-
-/// Prints the help.
-fn args_help() {
-    println!("Usage:");
-
-    println!("--help: Prints this help.");
-    println!("--offs offset: Offset from start of file. Moves last position.");
-    println!("--roffs offset: Offset from last position. Moves last position.");
-    println!("--size size: The number of bytes to evaluate. Moves last position.");
-    println!("--search token [token ...]: Searches for the first occurrence of tokens. Token can be a decimal of hex number or a string. The search starts at last position.");
-    println!("--format format: The output format:");
-	println!("  - bin: Binary output. The default.");
-	println!("  - text: Textual output. Showing the offset and values in rows.");
-
-    println!("Examples:");
-    println!("- \"binsearch --offs 10 --size 100\": Outputs the bytes from position 10 to 109.");
-    println!("- \"binsearch --offs 10 --size 100 --offs 200 --size 10\": Outputs the bytes from position 10 to 109, directly followed by 200 to 209.");
-    println!("- \"binsearch --offs 10 --size 100 --reloffs 10 --size 20\": Outputs the bytes from position 10 to 109, directly followed by 120 to 129.");
-    println!("- \"binsearch --search 'abc' --size 10\": Outputs 10 bytes from the first occurrence of 'abc'. If not fould nothing is output.");
-}
-
-
-#[cfg(test)]
-mod tests {
-
-    #[test]
-    fn loop_arguments_empty() {
-		//
-		//assert_eq!(args.get_next(), None);
-	}
 }

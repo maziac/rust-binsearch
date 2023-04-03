@@ -54,7 +54,7 @@ impl Arguments {
 
 #[cfg(test)]
 mod tests {
-    use crate::arguments::Arguments;
+    use super::Arguments;
 
     #[test]
     fn get_next_empty() {
