@@ -69,6 +69,41 @@ impl BinDumper {
 		}
 	}
 
+	/// Searches a string in the buffer and changes the 'offset'.
+	/// If the string is not found the buffer length is returned in 'offset'.
+	/// Arguments:
+	/// 'offset' - The offset to search from. The found offset is returned here.
+	/// 'search' - the serach string.
+	pub fn search(& self, offset: &mut i32, search: &str) {
+		let slen = search.len() as i32;
+		if slen > 0 {
+			let len = self.buffer.len() as i32;
+			let mut offs = *offset;
+			if offs < 0 {
+				offs = 0;
+			}
+			let last = len - slen + 1;
+			if offs <= last {
+				// Turn string into bytes
+				let buf = search.as_bytes();
+
+				// Loop al elements
+				for i in offs..last {
+					let mut k: usize = 0;
+					while self.buffer[(i as usize)+k] == buf[k] {
+						// Next
+						k += 1;
+						if k >= slen as usize {
+							*offset = i;
+							return;
+						}
+					}
+				}
+				// Nothing found
+			}
+			*offset = len;
+		}
+	}
 
 }
 
@@ -104,7 +139,7 @@ mod tests {
 
 
     #[test]
-    fn dump_to_buffer() {
+    fn dump() {
 		let mut bd = BinDumper::new();
 		bd.read_file("test_data/abcdefghijkl.bin");
 
@@ -148,5 +183,61 @@ mod tests {
 			assert_eq!(buf, "bcdefghijk".as_bytes());
 		}
 
+	}
+
+
+    #[test]
+    fn search() {
+		let mut bd = BinDumper::new();
+		bd.read_file("test_data/abcdefghijkl.bin");
+		let len = bd.buffer.len() as i32;
+
+		{
+			let mut offset = 0;
+			bd.search(&mut offset, "");
+			assert_eq!(offset, 0);
+		}
+
+		{
+			let mut offset = 0;
+			bd.search(&mut offset, "a");
+			assert_eq!(offset, 0);
+		}
+
+		{
+			let mut offset = 0;
+			bd.search(&mut offset, "b");
+			assert_eq!(offset, 1);
+		}
+
+		{
+			let mut offset = 2;
+			bd.search(&mut offset, "c");
+			assert_eq!(offset, 2);
+		}
+
+		{
+			let mut offset = 3;
+			bd.search(&mut offset, "c");
+			assert_eq!(offset, len);
+		}
+
+		{
+			let mut offset = 0;
+			bd.search(&mut offset, "cde");
+			assert_eq!(offset, 2);
+		}
+
+		{
+			let mut offset = 10;
+			bd.search(&mut offset, "abc");
+			assert_eq!(offset, len);
+		}
+
+		{
+			let mut offset = 0;
+			bd.search(&mut offset, "kl");
+			assert_eq!(offset, 10);
+		}
 	}
 }

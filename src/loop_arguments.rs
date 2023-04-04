@@ -94,6 +94,7 @@ pub fn loop_arguments(args_vec: Vec<String>, output: &mut impl Write) {
         else if arg == "--search" {
             let s = args.get_next_check("Expected a string.");
             println!("search: {}", s);
+			bin_dumper.search(&mut offs, &s);
             //offs += size;
         }
         else if arg == "--format" {
@@ -102,6 +103,7 @@ pub fn loop_arguments(args_vec: Vec<String>, output: &mut impl Write) {
         else {
             // It is the filename. Open file.
             bin_dumper.read_file(arg);
+			offs = 0;
         }
     }
 }
@@ -362,9 +364,9 @@ mod tests {
 				"".to_string(),
 				"test_data/abcdabcdaxyz.bin".to_string(),
 				"--search".to_string(), "a".to_string(),
-				"--size".to_string(), "1".to_string(),
+				"--offs".to_string(), "+1".to_string(),
 				"--search".to_string(), "a".to_string(),
-				"--size".to_string(), "1".to_string(),
+				"--offs".to_string(), "+1".to_string(),
 				"--search".to_string(), "a".to_string(),
 				"--offs".to_string(), "+1".to_string(),
 				"--size".to_string(), "3".to_string(),
