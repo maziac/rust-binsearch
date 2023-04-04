@@ -66,7 +66,6 @@ pub fn loop_arguments(args_vec: Vec<String>, output: &mut impl Write) {
         }
         else if arg == "--offs" {
             let o = args.get_next_check("Expected an offset.");
-            println!("offs: {}", o);
 			if o.starts_with("+") {
 	            offs += o[1..].parse::<i32>().unwrap();
 			}
@@ -79,7 +78,6 @@ pub fn loop_arguments(args_vec: Vec<String>, output: &mut impl Write) {
         }
         else if arg == "--size" {
             let s = args.get_next_check("Expected a size.");
-            println!("size: {}", s);
             // Check for max
             let size: i32;
             if s == "all" {
@@ -95,10 +93,6 @@ pub fn loop_arguments(args_vec: Vec<String>, output: &mut impl Write) {
             let s = args.get_next_check("Expected a string.");
             println!("search: {}", s);
 			bin_dumper.search(&mut offs, &s);
-            //offs += size;
-        }
-        else if arg == "--format" {
-            //args_format();
         }
         else {
             // It is the filename. Open file.
