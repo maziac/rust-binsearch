@@ -222,7 +222,7 @@ mod tests {
 	}
 
     #[test]
-    fn loop_arguments_out_of_range_4() {
+    fn loop_arguments_out_of_range_3() {
 		{
         	let mut buf: Vec<u8> = Vec::new();
 			loop_arguments(vec![
@@ -236,7 +236,7 @@ mod tests {
 	}
 
     #[test]
-    fn loop_arguments_out_of_range_5() {
+    fn loop_arguments_out_of_range_4() {
 		{
         	let mut buf: Vec<u8> = Vec::new();
 			loop_arguments(vec![
@@ -250,7 +250,7 @@ mod tests {
 	}
 
     #[test]
-    fn loop_arguments_out_of_range_6() {
+    fn loop_arguments_out_of_range_5() {
 		{
         	let mut buf: Vec<u8> = Vec::new();
 			loop_arguments(vec![

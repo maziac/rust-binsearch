@@ -47,7 +47,7 @@ impl BinDumper {
 	}
 
 
-	/// Dumps out the contents of a slice of 'buffer' to stdout.
+	/// Dumps out the contents of a slice of 'buffer' to 'output'.
 	/// # Arguments
 	/// * 'offset' - The first byte to dump out.
 	/// * 'size' - The number of bytes to dump out.
@@ -64,7 +64,7 @@ impl BinDumper {
 			if count > len - start {
 				count = len - start;
 			}
-			let  end = start + count;
+			let end = start + count;
 			output.write_all(&self.buffer[start as usize..end as usize]).unwrap();
 		}
 	}
