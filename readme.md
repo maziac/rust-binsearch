@@ -8,7 +8,7 @@ A binary search command line tool.
 - "**--offs** offset": Offset from start of file. Moves last position.
 - "**--reloffs** offset": Offset from last position. Moves last position.
 - "**--size** size": The number of bytes to evaluate. Moves last position.
-- "**--search** token [token ...]": Searches for the first occurrence of tokens. Token can be a decimal of hex number or a string. The search starts at last position.
+- "**--search** string": Searches for the first occurrence of the string. The search starts at last position.
 - "**--format** format": The output format:
 	- "bin": Binary output. The default.
 	- "text":	Textual output. Showing the offset and values in rows.
