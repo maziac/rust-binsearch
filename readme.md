@@ -1,7 +1,7 @@
 # binsearch
 
 A binary search command line tool.
-The tool allows you to specify one (or more files) and dump out values to stdout from a specific offset ad for a specific size.
+The tool allows you to specify one (or more files) and dump out values to stdout from a specific offset and for a specific size.
 It is also possible to search for patterns to set the offset.
 
 Note: Please also have a look [here(https://github.com/maziac/zig-binsearch)] for more options.
@@ -10,7 +10,7 @@ Note: Please also have a look [here(https://github.com/maziac/zig-binsearch)] fo
 # Arguments
 
 - "**--help**": Prints the help.
-- "**--offs** offset": Offset from start of file. Moves last position. You can also move relatively by prefixinge with + or -.
+- "**--offs** offset": Offset from start of file. Moves last position. You can also move relatively by prefixing with + or -.
 - "**--size** size": The number of bytes to output. Moves last position.
 - "**--search** string": Searches for the first occurrence of the string. The search starts at last position.
 
