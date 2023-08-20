@@ -21,7 +21,7 @@ Examples:
 - "binsearch --search 'abc' --size 10": Outputs 10 bytes from the first occurrence of 'abc'. If not found nothing is output.
 
 
-# Developemnt
+# Development
 
 # Run
 
